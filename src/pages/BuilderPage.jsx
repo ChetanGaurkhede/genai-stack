@@ -26,7 +26,6 @@ const MyStacksPage = () => {
         "http://localhost:8000/api/v1/workflows/"
       );
       setStacks(response.data);
-      console.log("Fetched workflows:", response.data);
       setLoading(false);
     } catch (error) {
       console.error("Failed to fetch workflows:", error);

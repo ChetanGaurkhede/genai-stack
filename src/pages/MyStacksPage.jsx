@@ -76,7 +76,6 @@ export default function WorkflowBuilders() {
       }
     }
   }, [location.pathname, allStack]);
-  useEffect(() => console.log("stackData: ", stackData), []);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),

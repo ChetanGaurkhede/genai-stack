@@ -19,7 +19,7 @@ export default function CreateStack({ isOpen, onClose, onCreate }) {
     const updatedStack = {
       ...stackData,
       stackId: mockStackId,
-      title: stackName,
+      name: stackName,
       description: stackDescription,
     };
 
@@ -27,12 +27,10 @@ export default function CreateStack({ isOpen, onClose, onCreate }) {
 
     try {
       await axios.post("http://localhost:8000/api/v1/workflows/", {
-        name: "My Workflow",
-        description: "This workflow analyzes documents",
-        nodes: [         
-        ],
-        edges: [
-        ],
+        name: stackName,
+        description: stackDescription,
+        nodes: [],
+        edges: [],
       });
     } catch (error) {
       console.error("Failed to create workflow via API:", error);
@@ -45,10 +43,6 @@ export default function CreateStack({ isOpen, onClose, onCreate }) {
     console.log("✅ New stack created:", updatedStack);
     onClose();
   };
-
-  useEffect(() => {
-    console.log("📦 Updated stacks:", stacks);
-  }, [stacks]);
 
   useEffect(() => {
     if (stackName.length > 0 && stackDescription.length > 0) {
