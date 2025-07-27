@@ -10,12 +10,13 @@ export default function CreateStack({ isOpen, onClose, onCreate }) {
   const { stackData, updateStack, stacks, setStacks } = useStackData();
   const [stackName, setStackName] = useState("");
   const [stackDescription, setStackDescription] = useState("");
+  const [path, setPath] = useState();
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
     if (!stackName.trim()) return;
 
-    const mockStackId = Date.now().toString();
+    const mockStackId = null;
     const updatedStack = {
       ...stackData,
       stackId: mockStackId,
@@ -23,25 +24,30 @@ export default function CreateStack({ isOpen, onClose, onCreate }) {
       description: stackDescription,
     };
 
-    updateStack(updatedStack);
-
     try {
-      await axios.post("http://localhost:8000/api/v1/workflows/", {
+      const res = await axios.post("http://localhost:8000/api/v1/workflows/", {
         name: stackName,
         description: stackDescription,
         nodes: [],
         edges: [],
       });
+
+      const newWorkflowId = res.data.id;
+
+      // Update local state
+      setStacks((prevStacks) => [...prevStacks, updatedStack]);
+
+      // Optional: Call onCreate for parent handling
+      onCreate({ title: stackName, description: stackDescription });
+
+      // Navigate to new workflow page using actual ID
+      navigate(`/builder/${newWorkflowId}`);
+
+      console.log("✅ New stack created:", updatedStack);
+      onClose();
     } catch (error) {
-      console.error("Failed to create workflow via API:", error);
+      console.error("❌ Failed to create workflow via API:", error);
     }
-
-    setStacks((prevStacks) => [...prevStacks, updatedStack]);
-
-    onCreate({ title: stackName, description: stackDescription });
-    navigate(`/builder/${mockStackId}`);
-    console.log("✅ New stack created:", updatedStack);
-    onClose();
   };
 
   useEffect(() => {
