@@ -252,15 +252,41 @@ export default function WorkflowBuilders() {
         workflowId="current-workflow"
       />
 
-      <div className="flex flex-col items-center justify-center fixed bottom-10 right-5 p-4 space-y-2 z-50">
-        <div className="rounded-full bg-green-700 p-3 shadow-md flex items-center gap-2 hover:bg-green-800 transition duration-200 ease-in-out transform hover:scale-110">
-          <Play className="w-4 h-4 text-white" onClick={buildStack} />
+      <div className="flex flex-col items-center justify-center fixed bottom-10 right-5 p-4 space-y-4 z-50">
+        {/* Build Stack Button with Tooltip */}
+        <div className="relative group">
+          <div
+            className="absolute right-14 top-1/2 transform -translate-y-1/2 
+                    bg-white text-gray-900 text-sm rounded-md px-3 py-1 shadow 
+                    whitespace-nowrap min-w-[110px] text-center
+                    opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          >
+            Build Stack
+          </div>
+          <div
+            onClick={buildStack}
+            className="rounded-full bg-green-400 p-3 shadow-md flex items-center gap-2 hover:bg-green-800 transition duration-200 ease-in-out transform hover:scale-110 cursor-pointer"
+          >
+            <Play className="w-4 h-4 text-white" />
+          </div>
         </div>
-        <div className="rounded-full bg-blue-700 p-3 shadow-md flex items-center gap-2 hover:bg-blue-800 transition duration-200 ease-in-out transform hover:scale-110">
-          <MessageCircle
-            className="w-4 h-4 text-white"
+
+        {/* Chat with Stack Button with Tooltip */}
+        <div className="relative group">
+          <div
+            className="absolute right-14 top-1/2 transform -translate-y-1/2 
+                    bg-white text-gray-900 text-sm rounded-md px-3 py-1 shadow 
+                    whitespace-nowrap min-w-[120px] text-center
+                    opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          >
+            Chat with Stack
+          </div>
+          <div
             onClick={() => setIsChatOpen(true)}
-          />
+            className="rounded-full bg-blue-400 p-3 shadow-md flex items-center gap-2 hover:bg-blue-800 transition duration-200 ease-in-out transform hover:scale-110 cursor-pointer"
+          >
+            <MessageCircle className="w-4 h-4 text-white" />
+          </div>
         </div>
       </div>
     </div>
