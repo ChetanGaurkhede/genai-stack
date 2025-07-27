@@ -13,6 +13,7 @@ const MyStacksPage = () => {
   const [workflows, setWorkflows] = useState([]);
 
   const [showModal, setShowModal] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   const handleCreateStack = (newStack) => {
     const id = Date.now().toString(); // mock id
@@ -54,11 +55,13 @@ const MyStacksPage = () => {
       </div>
     );
   }
-  const handleDelete = async (id) => {
+  const confirmDelete = async () => {
     try {
-      await axios.delete(`http://localhost:8000/api/v1/workflows/${id}`);
-      // Remove from UI
-      setStacks((prevStacks) => prevStacks.filter((stack) => stack.id !== id));
+      await axios.delete(
+        `http://localhost:8000/api/v1/workflows/${confirmDeleteId}`
+      );
+      setStacks((prev) => prev.filter((stack) => stack.id !== confirmDeleteId));
+      setConfirmDeleteId(null); // close modal
     } catch (error) {
       console.error("❌ Failed to delete workflow:", error);
     }
@@ -114,7 +117,7 @@ const MyStacksPage = () => {
                 </button>
                 <div className="absolute right-2 top-2 cursor-pointer bg-gray-200 p-2 rounded-lg shadow-2xl">
                   <Trash
-                    onClick={() => handleDelete(stack.id)}
+                    onClick={() => setConfirmDeleteId(stack.id)}
                     className=" text-red-500 h-3 w-3"
                   />
                 </div>
@@ -123,6 +126,32 @@ const MyStacksPage = () => {
           </div>
         )}
       </div>
+      {confirmDeleteId && (
+        <div className="fixed inset-0 z-50 bg-[#000000ca] backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-[320px]">
+            <h3 className="text-lg font-semibold mb-3">Confirm Deletion</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Are you sure you want to delete this stack? This action cannot be
+              undone.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setConfirmDeleteId(null)}
+                className="px-4 py-2 text-sm border rounded text-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <CreateStack
         isOpen={showModal}
         onClose={() => setShowModal(false)}
