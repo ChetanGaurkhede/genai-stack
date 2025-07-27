@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { PlusCircle, ExternalLink, Loader } from "lucide-react";
+import { PlusCircle, ExternalLink, Loader, Trash } from "lucide-react";
 import CreateStack from "../components/CreateStack";
 import { useStackData } from "../context/stackAiContext";
 import axios from "axios";
@@ -33,7 +33,6 @@ const MyStacksPage = () => {
     }
   };
 
-
   useEffect(() => {
     fetchData();
   }, []); // ← run only once on mount
@@ -48,22 +47,31 @@ const MyStacksPage = () => {
     }
   };
 
-  if(loading){
+  if (loading) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
         <Loader className="animate-spin h-5 w-5" />
       </div>
-    )
+    );
   }
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:8000/api/v1/workflows/${id}`);
+      // Remove from UI
+      setStacks((prevStacks) => prevStacks.filter((stack) => stack.id !== id));
+    } catch (error) {
+      console.error("❌ Failed to delete workflow:", error);
+    }
+  };
 
   return (
     <>
       <div className="min-h-screen bg-white p-8 pt-22">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-6 pb-3 max-6xl mx-auto border-b border-gray-300">
           <h1 className="text-2xl font-semibold">My Stacks</h1>
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow cursor-pointer"
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl shadow cursor-pointer"
           >
             <PlusCircle size={18} />
             New Stack
@@ -71,18 +79,19 @@ const MyStacksPage = () => {
         </div>
 
         {stacks.length === 0 ? (
-          <div className="flex justify-center items-center h-[60vh]">
-            <div className="text-center border border-gray-200 p-10 rounded-md shadow-sm">
-              <h2 className="text-lg font-medium mb-2">Create New Stack</h2>
+          <div className="flex justify-center items-center h-[60vh] ">
+            <div className=" border border-gray-200 p-8 py-5 rounded-2xl shadow-sm max-w-md">
+              <h2 className="text-xl font-medium mb-2">Create New Stack</h2>
               <p className="text-gray-500 mb-4">
                 Start building your generative AI apps with our essential tools
                 and frameworks.
               </p>
               <button
-                onClick={handleCreateStack}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                onClick={() => setShowModal(true)}
+                className="bg-green-600 hover:bg-green-700 cursor-pointer text-white px-4 py-2 rounded-xl flex gap-2 items-center"
               >
-                + New Stack
+                <PlusCircle size={18} />
+                New Stack
               </button>
             </div>
           </div>
@@ -91,7 +100,7 @@ const MyStacksPage = () => {
             {stacks.map((stack) => (
               <div
                 key={stack.id}
-                className="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition"
+                className="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition relative"
               >
                 <h3 className="font-semibold text-lg mb-1">{stack.name}</h3>
                 <p className="text-gray-500 text-sm mb-3">
@@ -103,6 +112,12 @@ const MyStacksPage = () => {
                 >
                   Edit Stack <ExternalLink size={14} />
                 </button>
+                <div className="absolute right-2 top-2 cursor-pointer bg-gray-200 p-2 rounded-lg shadow-2xl">
+                  <Trash
+                    onClick={() => handleDelete(stack.id)}
+                    className=" text-red-500 h-3 w-3"
+                  />
+                </div>
               </div>
             ))}
           </div>
